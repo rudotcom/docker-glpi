@@ -1,0 +1,44 @@
+version: "3.2"
+
+services:
+
+  mariadb:
+    image: mariadb:10.7
+    container_name: mariadb
+    hostname: mariadb
+    volumes:
+      - /var/lib/mysql:/var/lib/mysql
+    environment:
+      - MARIADB_ROOT_PASSWORD=pass
+      - MARIADB_DATABASE=glpidb
+      - MARIADB_USER=glpi_user
+      - MARIADB_PASSWORD=glpi
+    restart: always
+    networks:
+      - web-db
+
+  glpi:
+    image: diouxx/glpi
+    container_name : glpi
+    hostname: glpi
+    ports:
+      - "5080:80"
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /var/www/html/glpi/:/var/www/html/glpi
+    environment:
+      - TIMEZONE=America/Chicago
+    restart: always
+    networks:
+      - web-db
+
+networks:
+  web-db:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.181.0/24
+
+
